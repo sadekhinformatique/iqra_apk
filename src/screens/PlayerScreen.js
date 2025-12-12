@@ -5,7 +5,6 @@ import { StatusBar } from 'expo-status-bar';
 import Slider from '@react-native-community/slider';
 import AudioVisualizer from '../components/AudioVisualizer';
 import PlayerControls from '../components/PlayerControls';
-import CasterWidget from '../components/CasterWidget';
 import RadioService from '../services/RadioService';
 import theme from '../constants/theme';
 
@@ -16,11 +15,22 @@ const PlayerScreen = () => {
     const [volume, setVolume] = useState(1.0);
     const [shuffleEnabled, setShuffleEnabled] = useState(false);
     const [repeatEnabled, setRepeatEnabled] = useState(false);
+    const [metadata, setMetadata] = useState({ title: 'RADIO IQRA BF', artist: 'En direct' });
 
     useEffect(() => {
         RadioService.initialize();
 
+        // Listen for metadata changes
+        const handleMetadataChange = (newMetadata) => {
+            if (newMetadata) {
+                setMetadata(newMetadata);
+            }
+        };
+
+        RadioService.onMetadataChange(handleMetadataChange);
+
         return () => {
+            RadioService.removeMetadataListener(handleMetadataChange);
             RadioService.stop();
         };
     }, []);
@@ -67,12 +77,10 @@ const PlayerScreen = () => {
                     </View>
                 </View>
 
-                {/* Station Name */}
+                {/* Station Name and Current Song */}
                 <Text style={styles.stationName}>RADIO IQRA BF</Text>
-                <Text style={styles.subtitle}>En direct</Text>
-
-                {/* Caster.fm Widget (Web only) */}
-                {Platform.OS === 'web' && <CasterWidget />}
+                <Text style={styles.currentSong}>{metadata.title}</Text>
+                <Text style={styles.subtitle}>{metadata.artist}</Text>
 
                 {/* Audio Visualizer */}
                 <AudioVisualizer isPlaying={isPlaying} />
@@ -141,6 +149,13 @@ const styles = StyleSheet.create({
         color: theme.colors.text,
         textAlign: 'center',
         marginTop: theme.spacing.lg,
+    },
+    currentSong: {
+        fontSize: 20,
+        fontWeight: '600',
+        color: theme.colors.primary,
+        textAlign: 'center',
+        marginTop: theme.spacing.md,
     },
     subtitle: {
         ...theme.typography.body,

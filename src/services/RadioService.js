@@ -7,9 +7,14 @@ class RadioService {
         this.audioElement = null; // For web
         this.isPlaying = false;
         this.volume = 1.0;
+        this.currentMetadata = null;
+        this.metadataListeners = [];
 
-        // Caster.fm stream URL - using the channel ID from the embed code
-        this.streamUrl = 'https://stream.caster.fm/a092f64f-8e5f-4a70-ae42-0347517df896';
+        // Caster.fm configuration
+        this.publicToken = '621e4272-86f2-404f-96fb-7ac93d822685';
+        this.channelId = 'a092f64f-8e5f-4a70-ae42-0347517df896';
+        this.streamUrl = `https://stream.caster.fm/${this.channelId}`;
+        this.metadataUrl = `https://api.caster.fm/v1/channels/${this.channelId}/now-playing`;
     }
 
     async initialize() {
@@ -19,9 +24,11 @@ class RadioService {
             this.audioElement.volume = this.volume;
             this.audioElement.addEventListener('play', () => {
                 this.isPlaying = true;
+                this.startMetadataPolling();
             });
             this.audioElement.addEventListener('pause', () => {
                 this.isPlaying = false;
+                this.stopMetadataPolling();
             });
         } else {
             // Mobile: Configure expo-av
@@ -37,6 +44,68 @@ class RadioService {
                 console.error('Error initializing audio:', error);
             }
         }
+    }
+
+    async fetchMetadata() {
+        try {
+            const response = await fetch(this.metadataUrl, {
+                headers: {
+                    'Authorization': `Bearer ${this.publicToken}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.currentMetadata = {
+                    title: data.title || 'RADIO IQRA BF',
+                    artist: data.artist || 'En direct',
+                    artwork: data.artwork || null
+                };
+                this.notifyMetadataListeners();
+            }
+        } catch (error) {
+            console.error('Error fetching metadata:', error);
+            this.currentMetadata = {
+                title: 'RADIO IQRA BF',
+                artist: 'En direct',
+                artwork: null
+            };
+        }
+    }
+
+    startMetadataPolling() {
+        // Fetch immediately
+        this.fetchMetadata();
+
+        // Then fetch every 10 seconds
+        this.metadataInterval = setInterval(() => {
+            this.fetchMetadata();
+        }, 10000);
+    }
+
+    stopMetadataPolling() {
+        if (this.metadataInterval) {
+            clearInterval(this.metadataInterval);
+            this.metadataInterval = null;
+        }
+    }
+
+    onMetadataChange(callback) {
+        this.metadataListeners.push(callback);
+        // Call immediately with current metadata
+        if (this.currentMetadata) {
+            callback(this.currentMetadata);
+        }
+    }
+
+    removeMetadataListener(callback) {
+        this.metadataListeners = this.metadataListeners.filter(cb => cb !== callback);
+    }
+
+    notifyMetadataListeners() {
+        this.metadataListeners.forEach(callback => {
+            callback(this.currentMetadata);
+        });
     }
 
     async play() {
@@ -61,6 +130,8 @@ class RadioService {
                     this.sound = sound;
                     this.isPlaying = true;
                 }
+                // Start metadata polling for mobile too
+                this.startMetadataPolling();
             }
         } catch (error) {
             console.error('Error playing audio:', error);
@@ -81,6 +152,7 @@ class RadioService {
                     await this.sound.pauseAsync();
                     this.isPlaying = false;
                 }
+                this.stopMetadataPolling();
             }
         } catch (error) {
             console.error('Error pausing audio:', error);
@@ -89,6 +161,8 @@ class RadioService {
 
     async stop() {
         try {
+            this.stopMetadataPolling();
+
             if (Platform.OS === 'web') {
                 // Web: Stop and reset HTML5 Audio
                 if (this.audioElement) {
@@ -137,6 +211,10 @@ class RadioService {
 
     getPlaybackStatus() {
         return this.isPlaying;
+    }
+
+    getCurrentMetadata() {
+        return this.currentMetadata;
     }
 }
 
