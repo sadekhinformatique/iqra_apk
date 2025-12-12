@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import Slider from '@react-native-community/slider';
 import AudioVisualizer from '../components/AudioVisualizer';
 import PlayerControls from '../components/PlayerControls';
+import CasterWidget from '../components/CasterWidget';
 import RadioService from '../services/RadioService';
 import theme from '../constants/theme';
 
@@ -69,6 +70,9 @@ const PlayerScreen = () => {
                 {/* Station Name */}
                 <Text style={styles.stationName}>RADIO IQRA BF</Text>
                 <Text style={styles.subtitle}>En direct</Text>
+
+                {/* Caster.fm Widget (Web only) */}
+                {Platform.OS === 'web' && <CasterWidget />}
 
                 {/* Audio Visualizer */}
                 <AudioVisualizer isPlaying={isPlaying} />
