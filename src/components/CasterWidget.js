@@ -57,14 +57,14 @@ const CasterWidget = () => {
     const customizeWidget = () => {
         if (typeof document === 'undefined') return;
 
-        // Add custom CSS to hide Caster.fm logo and customize widget
+        // Add custom CSS to hide Caster.fm logo and add IQRA logo
         const style = document.createElement('style');
         style.innerHTML = `
-      /* Hide Caster.fm logo */
+      /* Hide Caster.fm branding */
       .cstrEmbed a[href*="caster.fm"],
       .cstrEmbed img[alt*="caster"],
       .cstrEmbed .caster-logo,
-      .cstrEmbed [class*="logo"],
+      .cstrEmbed [class*="logo"]:not(.iqra-logo),
       .cstrEmbed [class*="branding"] {
         display: none !important;
         visibility: hidden !important;
@@ -75,30 +75,26 @@ const CasterWidget = () => {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        margin: 20px auto !important;
+        margin: 0 auto !important;
         max-width: 600px !important;
+        position: relative !important;
       }
 
-      /* Add IQRA logo to empty space */
+      /* Add smaller IQRA logo on top of widget */
       .cstrEmbed::before {
         content: '';
         position: absolute;
-        top: 20px;
+        top: 15px;
         left: 50%;
         transform: translateX(-50%);
-        width: 120px;
-        height: 120px;
+        width: 80px;
+        height: 80px;
         background-image: url('/assets/logo.png');
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        z-index: 10;
-      }
-
-      /* Style the widget container */
-      .cstrEmbed > div {
-        position: relative;
-        padding-top: 140px !important;
+        z-index: 1000;
+        pointer-events: none;
       }
     `;
         document.head.appendChild(style);
@@ -120,7 +116,8 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         alignItems: 'center',
-        marginVertical: 20,
+        justifyContent: 'center',
+        flex: 1,
     },
 });
 

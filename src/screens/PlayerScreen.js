@@ -67,53 +67,58 @@ const PlayerScreen = () => {
             <StatusBar style="light" />
 
             <View style={styles.content}>
-                {/* Logo Section */}
-                <View style={styles.logoContainer}>
-                    <View style={styles.logoWrapper}>
-                        <Image
-                            source={require('../../assets/logo.png')}
-                            style={styles.logo}
-                            resizeMode="contain"
-                        />
-                    </View>
-                </View>
+                {Platform.OS === 'web' ? (
+                    /* Web: Show only Caster.fm Widget centered */
+                    <CasterWidget />
+                ) : (
+                    /* Mobile: Show full custom player */
+                    <>
+                        {/* Logo Section */}
+                        <View style={styles.logoContainer}>
+                            <View style={styles.logoWrapper}>
+                                <Image
+                                    source={require('../../assets/logo.png')}
+                                    style={styles.logo}
+                                    resizeMode="contain"
+                                />
+                            </View>
+                        </View>
 
-                {/* Station Name and Current Song */}
-                <Text style={styles.stationName}>RADIO IQRA BF</Text>
-                <Text style={styles.currentSong}>{metadata.title}</Text>
-                <Text style={styles.subtitle}>{metadata.artist}</Text>
+                        {/* Station Name and Current Song */}
+                        <Text style={styles.stationName}>RADIO IQRA BF</Text>
+                        <Text style={styles.currentSong}>{metadata.title}</Text>
+                        <Text style={styles.subtitle}>{metadata.artist}</Text>
 
-                {/* Caster.fm Widget (Web only) - Centered with IQRA logo */}
-                {Platform.OS === 'web' && <CasterWidget />}
+                        {/* Audio Visualizer */}
+                        <AudioVisualizer isPlaying={isPlaying} />
 
-                {/* Audio Visualizer (Mobile only) */}
-                {Platform.OS !== 'web' && <AudioVisualizer isPlaying={isPlaying} />}
+                        {/* Volume Slider */}
+                        <View style={styles.sliderContainer}>
+                            <Slider
+                                style={styles.slider}
+                                minimumValue={0}
+                                maximumValue={1}
+                                value={volume}
+                                onValueChange={handleVolumeChange}
+                                minimumTrackTintColor={theme.colors.text}
+                                maximumTrackTintColor={theme.colors.border}
+                                thumbTintColor={theme.colors.text}
+                            />
+                        </View>
 
-                {/* Volume Slider */}
-                <View style={styles.sliderContainer}>
-                    <Slider
-                        style={styles.slider}
-                        minimumValue={0}
-                        maximumValue={1}
-                        value={volume}
-                        onValueChange={handleVolumeChange}
-                        minimumTrackTintColor={theme.colors.text}
-                        maximumTrackTintColor={theme.colors.border}
-                        thumbTintColor={theme.colors.text}
-                    />
-                </View>
-
-                {/* Player Controls */}
-                <View style={styles.controls}>
-                    <PlayerControls
-                        isPlaying={isPlaying}
-                        onPlayPause={handlePlayPause}
-                        onShuffle={handleShuffle}
-                        onRepeat={handleRepeat}
-                        shuffleEnabled={shuffleEnabled}
-                        repeatEnabled={repeatEnabled}
-                    />
-                </View>
+                        {/* Player Controls */}
+                        <View style={styles.controls}>
+                            <PlayerControls
+                                isPlaying={isPlaying}
+                                onPlayPause={handlePlayPause}
+                                onShuffle={handleShuffle}
+                                onRepeat={handleRepeat}
+                                shuffleEnabled={shuffleEnabled}
+                                repeatEnabled={repeatEnabled}
+                            />
+                        </View>
+                    </>
+                )}
             </View>
         </LinearGradient>
     );
