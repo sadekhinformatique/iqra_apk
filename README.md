@@ -2,6 +2,10 @@
 
 A cross-platform mobile radio streaming application for Android and iOS, built with React Native and Expo.
 
+## 📱 GitHub Repository
+
+**Repository**: [https://github.com/sadekhinformatique/iqra_apk](https://github.com/sadekhinformatique/iqra_apk)
+
 ## Features
 
 - 🎵 Live radio streaming from Caster.fm
@@ -20,17 +24,23 @@ A cross-platform mobile radio streaming application for Android and iOS, built w
 
 ## Installation
 
-1. **Install dependencies:**
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/sadekhinformatique/iqra_apk.git
+   cd iqra_apk
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. **Start the development server:**
+3. **Start the development server:**
    ```bash
    npm start
    ```
 
-3. **Run on your device:**
+4. **Run on your device:**
    - Scan the QR code with Expo Go app (Android)
    - Scan the QR code with Camera app (iOS)
 
@@ -125,6 +135,10 @@ Replace `assets/logo.png` with your own logo image.
 
 ## Troubleshooting
 
+### Error: The required package `expo-asset` cannot be found
+
+**Solution**: Run `npm install` to install all required dependencies.
+
 ### Audio not playing
 
 - Ensure you have a stable internet connection
@@ -150,4 +164,4 @@ This project is created for RADIO IQRA BF.
 
 ## Support
 
-For issues or questions, please contact the development team.
+For issues or questions, please open an issue on [GitHub](https://github.com/sadekhinformatique/iqra_apk/issues).
