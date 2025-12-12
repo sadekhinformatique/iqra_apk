@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import Slider from '@react-native-community/slider';
 import AudioVisualizer from '../components/AudioVisualizer';
 import PlayerControls from '../components/PlayerControls';
+import CasterWidget from '../components/CasterWidget';
 import RadioService from '../services/RadioService';
 import theme from '../constants/theme';
 
@@ -82,8 +83,11 @@ const PlayerScreen = () => {
                 <Text style={styles.currentSong}>{metadata.title}</Text>
                 <Text style={styles.subtitle}>{metadata.artist}</Text>
 
-                {/* Audio Visualizer */}
-                <AudioVisualizer isPlaying={isPlaying} />
+                {/* Caster.fm Widget (Web only) - Centered with IQRA logo */}
+                {Platform.OS === 'web' && <CasterWidget />}
+
+                {/* Audio Visualizer (Mobile only) */}
+                {Platform.OS !== 'web' && <AudioVisualizer isPlaying={isPlaying} />}
 
                 {/* Volume Slider */}
                 <View style={styles.sliderContainer}>
